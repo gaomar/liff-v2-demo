@@ -8,6 +8,25 @@
         <h1>ようこそ！ {{name}} さん</h1>
         <h3><v-btn large color="error" @click="logout">ログアウト</v-btn></h3>
       </v-flex>
+
+      <v-flex mb-4 xs12>
+        <div class="ma-4">
+          <v-btn large color="success" @click="sendLINE" :disabled="isClient === false">LINEに送る</v-btn>
+        </div>
+      </v-flex>
+
+      <!-- Snackbar -->
+      <div>
+        <v-snackbar
+          v-model="snackbarFlag"
+          color="primary"
+          multi-line
+          :timeout="snackbarTimeout"
+          top
+        >
+          {{ snackbarText }}
+        </v-snackbar>
+      </div>
     </v-layout>
   </v-container>
 </template>
@@ -16,7 +35,12 @@
 export default {
   data () {
     return {
-      name: ''
+      snackbarFlag: false,
+      snackbarTimeout: 3000,
+      snackbarText: '',
+      name: '',
+      imgURL: '',
+      inClient: false
     }
   },
   created () {
@@ -42,10 +66,12 @@ export default {
 
       // ログインチェック
       if (liff.isLoggedIn()) {
+        this.isClient = liff.isInClient()
         // プロフィール取得
         liff.getProfile()
           .then(profile => {
             me.name = profile.displayName
+            me.imgURL = profile.pictureUrl
           })
           .catch((err) => {
             console.log('error', err)
@@ -61,7 +87,40 @@ export default {
         liff.logout()
         this.$router.push({ name: 'home' })
       }
-    }
+    },
+    sendLINE: function () {
+      var me = this
+      // LINEに送る
+      liff.sendMessages([
+        {
+          "type": "text",
+          "text": "あなたのアイコン画像を送ります"
+        },
+        {
+          "type": "image",
+          "originalContentUrl": me.imgURL,
+          "previewImageUrl": me.imgURL
+        }
+      ])
+      .then(() => {
+        console.log('message sent');
+        me.showSnackbar("LINEに送信しました")
+      })
+      .catch((err) => {
+        console.log('error', err)
+        me.showSnackbar("LINEに送信失敗しました")
+      })
+    },
+    showSnackbar(text) {
+      this.snackbarFlag = true
+      this.snackbarText = text
+      setTimeout(()=> {
+          this.snackbarFlag = false
+          this.snackbarText = ''
+        },
+        this.snackbarTimeout
+      )
+    },
   }
 }
 </script>
