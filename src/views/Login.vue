@@ -105,6 +105,14 @@ export default {
       .then(() => {
         console.log('message sent');
         me.showSnackbar("LINEに送信しました")
+/*
+        // 自動的に閉じる
+        setTimeout(()=> {
+          liff.closeWindow()
+        },
+          this.snackbarTimeout
+        )
+*/
       })
       .catch((err) => {
         console.log('error', err)
