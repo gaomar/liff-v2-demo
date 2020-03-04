@@ -15,6 +15,14 @@
         </div>
       </v-flex>
 
+<!--
+      <v-flex mb-4 xs12>
+        <div class="ma-4">
+          <v-btn large color="success" @click="shareLINE" :disabled="isClient === false">LINEにシェア</v-btn>
+        </div>
+      </v-flex>
+-->
+
       <!-- Snackbar -->
       <div>
         <v-snackbar
@@ -117,6 +125,37 @@ export default {
       .catch((err) => {
         console.log('error', err)
         me.showSnackbar("LINEに送信失敗しました")
+      })
+    },
+    shareLINE: function () {
+      var me = this
+      // LINEに送る
+      liff.shareTargetPicker([
+        {
+          "type": "text",
+          "text": "あなたのアイコン画像を送ります"
+        },
+        {
+          "type": "image",
+          "originalContentUrl": me.imgURL,
+          "previewImageUrl": me.imgURL
+        }
+      ])
+      .then(() => {
+        console.log('message sent');
+        me.showSnackbar("LINEにシェアしました")
+///*
+        // 自動的に閉じる
+        setTimeout(()=> {
+          liff.closeWindow()
+        },
+          this.snackbarTimeout
+        )
+//*/
+      })
+      .catch((err) => {
+        console.log('error', err)
+        me.showSnackbar("LINEにシェア失敗しました")
       })
     },
     showSnackbar(text) {
