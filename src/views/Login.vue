@@ -18,7 +18,7 @@
 <!--
       <v-flex mb-4 xs12>
         <div class="ma-4">
-          <v-btn large color="success" @click="shareLINE" :disabled="isClient === false">LINEにシェア</v-btn>
+          <v-btn large color="success" @click="shareLINE">LINEにシェア</v-btn>
         </div>
       </v-flex>
 -->
@@ -144,14 +144,6 @@ export default {
       .then(() => {
         console.log('message sent');
         me.showSnackbar("LINEにシェアしました")
-///*
-        // 自動的に閉じる
-        setTimeout(()=> {
-          liff.closeWindow()
-        },
-          this.snackbarTimeout
-        )
-//*/
       })
       .catch((err) => {
         console.log('error', err)
